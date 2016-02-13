@@ -67,6 +67,20 @@ class StateProblem(object):
             while not nodes.empty():
                 
                 curr=nodes.get()
+                if curr[-1][0] in self.end:
+                    final=[]                        
+                    for i in curr:
+                        if i!=(0,0):
+                            step.append(self.steps[i[-1]])
+                    result["steps"]=step
+                    for i in curr:
+                        if i!=(0,0):
+                            final.append(i[0])
+                        else:
+                            final.append((0,0))
+                    result['state sequence']=final
+                    break
+                        
                 for n,i in enumerate(self.transition_database[curr[-1][0]]):
 
                     if i in self.end:
@@ -98,11 +112,19 @@ class StateProblem(object):
 if __name__ == '__main__':
     jug_a = int(raw_input('Enter size of container 1: '))
     jug_b = int(raw_input('Enter size of container 2: '))
-    goal = int(raw_input('Enter measurement: '))
-    Solution = StateProblem(jug_a, jug_b, goal)
-    Result = Solution.breadth_first()
-    for state in Result['state sequence']:
-        print state,'->',
-    print
-    for index, step in enumerate(Result['steps']):
-        print '%d.'%(index+1),step
+    goal = int(raw_input('Enter measurement(1-%d): '%max(jug_a, jug_b)))
+    if goal == 0:
+        print 'Measurement cannot be zero.'
+    elif goal > max(jug_a, jug_b):
+        print 'Measurement cannot exceed size of largest jug.'
+    else:
+        Solution = StateProblem(jug_a, jug_b, goal)
+        Result = Solution.breadth_first()
+        if not Result:
+            print 'Measurement not possible'
+        else:
+            for state in Result['state sequence']:
+                print state,'->',
+            print
+            for index, step in enumerate(Result['steps']):
+                print '%d.'%(index+1),step
